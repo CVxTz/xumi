@@ -19,11 +19,9 @@ setup(
     license="GNU",
     keywords="nlp",
     url="https://github.com/CVxTz/xumi",
-    packages=["nlp"],
+    packages=["xumi"],
     classifiers=[
-        "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
     ],
     install_requires=REQUIRED,
 )

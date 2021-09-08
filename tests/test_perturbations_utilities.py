@@ -1,6 +1,10 @@
 from Levenshtein import ratio
 
-from xumi.perturbations.utilities import remove_character, add_character, substitute_character
+from xumi.perturbations.utilities import (
+    remove_character,
+    add_character,
+    substitute_character,
+)
 
 
 def test_remove_character():

@@ -1,0 +1,6 @@
+pytorch_lightning==1.4.1
+tokenizers==0.10.3
+nltk==3.6.2
+torch==1.8.1
+python_Levenshtein==0.12.2
+scikit_learn==0.24.2

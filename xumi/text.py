@@ -7,6 +7,6 @@ class Text:
         self.transformed: str = transformed if transformed else self.original
 
     def __str__(self):
-        return f"Text:\n" \
-               f"original={self.original}\n" \
-               f"transformed={self.transformed}"
+        return (
+            f"Text:\n" f"original={self.original}\n" f"transformed={self.transformed}"
+        )

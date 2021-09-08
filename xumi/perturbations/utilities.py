@@ -1,4 +1,3 @@
-import random
 import string
 from random import choice, randint
 
@@ -37,3 +36,8 @@ def substitute_character(word: str):
     characters[i] = char
 
     return "".join(characters)
+
+
+def uppercase(word: str):
+
+    return word.upper()
