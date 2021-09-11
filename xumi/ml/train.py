@@ -70,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", default=2000)
     parser.add_argument(
         "--init_model_path",
-        default=str(Path(__file__).absolute().parents[2] / "output" / "checker.ckpt")
+        default=str(Path(__file__).absolute().parents[2] / "output" / "checker-v2.ckpt")
     )
     parser.add_argument(
         "--data_path", default="/media/jenazzad/Data/ML/nlp/wikisent2.txt"

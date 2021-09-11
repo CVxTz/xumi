@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model_path",
-        default=str(Path(__file__).absolute().parents[2] / "output" / "checker.ckpt"),
+        default=str(Path(__file__).absolute().parents[2] / "output" / "checker-v2.ckpt"),
     )
     parser.add_argument(
         "--tokenizer_path",
@@ -76,8 +76,8 @@ if __name__ == "__main__":
 
     model.eval()
 
-    s = "The KING vultre (Sarcoramphus papa) is, a larg bird fouund in Central and South Amerika"
-    # The king vulture (Sarcoramphus papa) is a large bird found in Central and South America.
+    s = "The KING vultre is an larg bird fouund in Central and South Amerika"
+    # The king vulture is a large bird found in Central and South America.
 
     corrected = predict(
         transformed_text=s,
