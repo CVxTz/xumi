@@ -54,7 +54,7 @@ class RemoveRandomWord(Perturbation):
         words = word_tokenize(text.transformed)
         if words:
             word = choice(words)
-            text.transformed = text.transformed.replace(word, "")
+            text.transformed = text.transformed.replace(" " + word, " ")
 
 
 class PerturbRandomWord(Perturbation):
@@ -72,7 +72,7 @@ class PerturbRandomWord(Perturbation):
                 [substitute_character, remove_character, add_character, uppercase]
             )
             transformed = func(word)
-            text.transformed = text.transformed.replace(word, transformed)
+            text.transformed = text.transformed.replace(" " + word, " " + transformed)
 
 
 class LowerCase(Perturbation):
@@ -120,7 +120,7 @@ class AddSpellingError(Perturbation):
         if available_words:
             word = choice(available_words)
             transformed = choice(cls.spell_error[word.lower()])
-            text.transformed = text.transformed.replace(word, transformed)
+            text.transformed = text.transformed.replace(" " + word, " " + transformed)
 
 
 class ChangeVerbForm(Perturbation):
