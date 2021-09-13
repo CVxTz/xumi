@@ -39,5 +39,4 @@ def substitute_character(word: str):
 
 
 def uppercase(word: str):
-
     return word.upper()

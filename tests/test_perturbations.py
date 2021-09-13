@@ -123,4 +123,3 @@ def test_common_errors():
     CommonErrors.perturb(text=text)
 
     assert 0.5 < ratio(before, text.transformed) < 1
-

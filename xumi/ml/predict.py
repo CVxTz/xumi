@@ -1,14 +1,18 @@
 from pathlib import Path
 
-from tokenizers import Tokenizer
 import torch
+from tqdm import tqdm
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from tokenizers import Tokenizer
 
-from xumi.ml.train import MAX_LEN
 from xumi.ml.models import Seq2Seq
+from xumi.ml.train import MAX_LEN
+from xumi.perturbations.apply_perturbations import apply_perturbation_to_text
+from xumi.text import Text
 
 
 def predict(transformed_text, model, tokenizer, cls_index, sep_index, max_len=MAX_LEN):
-
     src = tokenizer.encode(transformed_text).ids
 
     src = torch.tensor(src, dtype=torch.long)
@@ -22,8 +26,6 @@ def predict(transformed_text, model, tokenizer, cls_index, sep_index, max_len=MA
     trg[:, 0] = cls_index
 
     for i in range(1, max_len):
-        print([i] * 100)
-        print(tokenizer.decode(trg.squeeze().numpy()))
         output = model.decode_trg(trg[:, :i], memory=memory)
         output = output.argmax(2)
 
@@ -41,13 +43,14 @@ def predict(transformed_text, model, tokenizer, cls_index, sep_index, max_len=MA
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model_path",
-        default=str(Path(__file__).absolute().parents[2] / "output" / "checker-v2.ckpt"),
+        default=str(
+            Path(__file__).absolute().parents[2] / "output" / "checker-v4.ckpt"
+        ),
     )
     parser.add_argument(
         "--tokenizer_path",
@@ -55,11 +58,24 @@ if __name__ == "__main__":
             Path(__file__).absolute().parents[2] / "resources" / "tokenizer.json"
         ),
     )
-
+    parser.add_argument(
+        "--data_path", default="/media/jenazzad/Data/ML/nlp/wikisent2.txt"
+    )
+    parser.add_argument(
+        "--base_path", default=str(Path(__file__).absolute().parents[2] / "output")
+    )
     args = parser.parse_args()
 
+    data_path = args.data_path
     model_path = args.model_path
     tokenizer_path = args.tokenizer_path
+    base_path = Path(args.base_path)
+    base_path.mkdir(exist_ok=True)
+
+    with open(data_path) as f:
+        data = f.read().split("\n")
+
+    train, val = train_test_split(data, test_size=0.05, random_state=1337)
 
     tokenizer = Tokenizer.from_file(tokenizer_path)
 
@@ -76,7 +92,7 @@ if __name__ == "__main__":
 
     model.eval()
 
-    s = "The KING vultre is an larg bird fouund in Central and South Amerika"
+    s = "The KING vultre were an larg bird fouund in Central and South Amerika"
     # The king vulture is a large bird found in Central and South America.
 
     corrected = predict(
@@ -87,4 +103,25 @@ if __name__ == "__main__":
         sep_index=tokenizer.token_to_id("[SEP]"),
     )
 
-    print(corrected)
+    gt_val = []
+    perturbed_val = []
+    predicted_val = []
+
+    for sentence in tqdm(val[:100]):
+        gt_val.append(sentence)
+        text = Text(original=sentence)
+        apply_perturbation_to_text(text, freq=3)
+        perturbed_val.append(text.transformed)
+        predicted = predict(
+            transformed_text=text.transformed,
+            model=model,
+            tokenizer=tokenizer,
+            cls_index=tokenizer.token_to_id("[CLS]"),
+            sep_index=tokenizer.token_to_id("[SEP]"),
+        )
+
+        predicted_val.append(predicted)
+
+    df = pd.DataFrame({"ground_truth": gt_val, "perturbed": perturbed_val, "corrected": predicted_val})
+
+    df.to_csv(base_path / "sample_predictions.csv", index=False)

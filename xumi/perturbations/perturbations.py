@@ -154,7 +154,7 @@ class ChangeVerbForm(Perturbation):
         if available_words:
             word = choice(available_words)
             transformed = choice(cls.verbs[word.lower()])
-            text.transformed = text.transformed.replace(word, transformed)
+            text.transformed = text.transformed.replace(" " + word, " " + transformed)
 
 
 class CommonErrors(Perturbation):

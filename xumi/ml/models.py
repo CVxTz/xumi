@@ -8,14 +8,12 @@ from torch.nn import functional as F
 
 
 def gen_trg_mask(length, device):
-
     return torch.triu(
         torch.ones(length, length, device=device) * float("-inf"), diagonal=1
     )
 
 
 def create_padding_mask(tensor, pad_idx):
-
     padding_mask = (tensor == pad_idx).transpose(0, 1)
 
     return padding_mask
@@ -111,7 +109,6 @@ class Seq2Seq(pl.LightningModule):
         self.linear.weight.data.uniform_(-init_range, init_range)
 
     def encode_src(self, src):
-
         src = src.permute(1, 0)
 
         src_pad_mask = create_padding_mask(src, self.pad_idx)
@@ -159,15 +156,12 @@ class Seq2Seq(pl.LightningModule):
         return out
 
     def training_step(self, batch, batch_idx):
-
         return self._step(batch, batch_idx, name="train")
 
     def validation_step(self, batch, batch_idx):
-
         return self._step(batch, batch_idx, name="valid")
 
     def test_step(self, batch, batch_idx):
-
         return self._step(batch, batch_idx, name="test")
 
     def _step(self, batch, batch_idx, name="train"):

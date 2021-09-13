@@ -7,14 +7,13 @@ import torch
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from sklearn.model_selection import train_test_split
+from tokenizers import Tokenizer
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
-from tokenizers import Tokenizer
 
-from xumi.perturbations.apply_perturbations import apply_perturbation_to_text
 from xumi.ml.models import Seq2Seq
+from xumi.perturbations.apply_perturbations import apply_perturbation_to_text
 from xumi.text import Text
-
 
 MAX_LEN = 256
 
@@ -70,7 +69,9 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", default=2000)
     parser.add_argument(
         "--init_model_path",
-        default=str(Path(__file__).absolute().parents[2] / "output" / "checker-v2.ckpt")
+        default=str(
+            Path(__file__).absolute().parents[2] / "output" / "checker-v3.ckpt"
+        ),
     )
     parser.add_argument(
         "--data_path", default="/media/jenazzad/Data/ML/nlp/wikisent2.txt"
@@ -126,7 +127,7 @@ if __name__ == "__main__":
     model = Seq2Seq(
         out_vocab_size=tokenizer.get_vocab_size(),
         pad_idx=tokenizer.token_to_id("[PAD]"),
-        lr=1e-5,
+        lr=1e-6,
         dropout=0.1,
     )
 
