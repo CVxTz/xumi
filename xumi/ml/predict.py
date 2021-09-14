@@ -126,6 +126,12 @@ if __name__ == "__main__":
 
             predicted_val.append(predicted)
 
-        df = pd.DataFrame({"ground_truth": gt_val, "perturbed": perturbed_val, "corrected": predicted_val})
+        df = pd.DataFrame(
+            {
+                "ground_truth": gt_val,
+                "perturbed": perturbed_val,
+                "corrected": predicted_val,
+            }
+        )
 
         df.to_csv(base_path / "sample_predictions.csv", index=False)
