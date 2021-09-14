@@ -66,16 +66,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    data_path = args.data_path
     model_path = args.model_path
     tokenizer_path = args.tokenizer_path
-    base_path = Path(args.base_path)
-    base_path.mkdir(exist_ok=True)
-
-    with open(data_path) as f:
-        data = f.read().split("\n")
-
-    train, val = train_test_split(data, test_size=0.05, random_state=1337)
 
     tokenizer = Tokenizer.from_file(tokenizer_path)
 
@@ -102,26 +94,38 @@ if __name__ == "__main__":
         cls_index=tokenizer.token_to_id("[CLS]"),
         sep_index=tokenizer.token_to_id("[SEP]"),
     )
+    print(corrected)
 
-    gt_val = []
-    perturbed_val = []
-    predicted_val = []
+    if args.data_path and args.base_path and Path(args.data_path).is_file():
 
-    for sentence in tqdm(val[:100]):
-        gt_val.append(sentence)
-        text = Text(original=sentence)
-        apply_perturbation_to_text(text, freq=3)
-        perturbed_val.append(text.transformed)
-        predicted = predict(
-            transformed_text=text.transformed,
-            model=model,
-            tokenizer=tokenizer,
-            cls_index=tokenizer.token_to_id("[CLS]"),
-            sep_index=tokenizer.token_to_id("[SEP]"),
-        )
+        base_path = Path(args.base_path)
+        base_path.mkdir(exist_ok=True)
+        data_path = args.data_path
 
-        predicted_val.append(predicted)
+        with open(data_path) as f:
+            data = f.read().split("\n")
 
-    df = pd.DataFrame({"ground_truth": gt_val, "perturbed": perturbed_val, "corrected": predicted_val})
+        train, val = train_test_split(data, test_size=0.05, random_state=1337)
 
-    df.to_csv(base_path / "sample_predictions.csv", index=False)
+        gt_val = []
+        perturbed_val = []
+        predicted_val = []
+
+        for sentence in tqdm(val[:100]):
+            gt_val.append(sentence)
+            text = Text(original=sentence)
+            apply_perturbation_to_text(text, freq=3)
+            perturbed_val.append(text.transformed)
+            predicted = predict(
+                transformed_text=text.transformed,
+                model=model,
+                tokenizer=tokenizer,
+                cls_index=tokenizer.token_to_id("[CLS]"),
+                sep_index=tokenizer.token_to_id("[SEP]"),
+            )
+
+            predicted_val.append(predicted)
+
+        df = pd.DataFrame({"ground_truth": gt_val, "perturbed": perturbed_val, "corrected": predicted_val})
+
+        df.to_csv(base_path / "sample_predictions.csv", index=False)
